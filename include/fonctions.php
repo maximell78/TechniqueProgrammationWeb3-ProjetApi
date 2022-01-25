@@ -2,15 +2,16 @@
 
 function ConversionForfaitSQLEnObjet($forfaitsSQL) {
 
-    $forfaitsOBJ->infoVol = new stdClass();
-    $forfaitsOBJ->infoVol-> destination = $forfaitsSQL["destination"];
-    $forfaitsOBJ->infoVol-> villeDepart = $forfaitsSQL["villeDepart"];
-    $forfaitsOBJ->infoVol-> dateRetour = $forfaitsSQL["dateRetour"];
-    $forfaitsOBJ->infoVol-> prix = $forfaitsSQL["prix"];
-    $forfaitsOBJ->infoVol-> rabais = $forfaitsSQL["rabais"];
-    $forfaitsOBJ->infoVol-> affichageRabais = $forfaitsSQL["affichageRabais"];
-    $forfaitsOBJ->infoVol-> nouveauPrix = $forfaitsSQL["nouveauPrix"];
-    $forfaitsOBJ->infoVol-> vedette = $forfaitsSQL["vedette"];
+    $forfaitsOBJ = new stdClass();
+    $forfaitsOBJ->destination = $forfaitsSQL["destination"];
+    $forfaitsOBJ->villeDepart = $forfaitsSQL["villeDepart"];
+    $forfaitsOBJ->dateDepart = $forfaitsSQL["dateDepart"];
+    $forfaitsOBJ->dateRetour = $forfaitsSQL["dateRetour"];
+    $forfaitsOBJ->prix = $forfaitsSQL["prix"];
+    $forfaitsOBJ->rabais = $forfaitsSQL["rabais"];
+    $forfaitsOBJ->affichageRabais = $forfaitsSQL["affichageRabais"];
+    $forfaitsOBJ->nouveauPrix = $forfaitsSQL["nouveauPrix"];
+    $forfaitsOBJ->vedette = $forfaitsSQL["vedette"];
 
     $forfaitsOBJ->hotel = new stdClass();
     $forfaitsOBJ->hotel->nom = $forfaitsSQL["nom"];
@@ -18,7 +19,7 @@ function ConversionForfaitSQLEnObjet($forfaitsSQL) {
     $forfaitsOBJ->hotel->nombreEtoiles = $forfaitsSQL["nombreEtoiles"];
     $forfaitsOBJ->hotel->nombreChambres = $forfaitsSQL["nombreChambres"];
     $forfaitsOBJ->hotel->description = $forfaitsSQL["description"];
-    $forfaitsOBJ->hotel->caracteristiques = $forfaitsSQL["caracteristiques"];
+    $forfaitsOBJ->hotel->caracteristiques = explode(";", $forfaitsSQL["caracteristiques"]);
     $forfaitsOBJ->hotel->avis = $forfaitsSQL["avis"];
 
     return $forfaitsOBJ;

@@ -17,24 +17,51 @@ header('Access-Control-Allow-Origin: *');
 				$requete->bind_param("i", $_GET['id']); // Envoi des paramètres à la requête
                 $requete->execute(); // Exécution de la requête
                 $resultat_requete = $requete->get_result(); // Récupération de résultats de la requête
-                $forfaitsOBJ = $resultat_requete->fetch_assoc(); // Récupération de l'enregistrement 
+                $forfaitsOBJ = $resultat_requete->fetch_assoc(); // Récupération de l'enregistrement
+                $forfaitsOBJ = ConversionForfaitSQLEnObjet($forfaitsOBJ);
                 echo json_encode($forfaitsOBJ, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES); // Transmission de l’objet au format JSON
+                $requete->close();
             } else { 
-				$requete = $mysqli->query("SELECT * FROM forfaits");                
-                $forfaitsOBJ = $requete->fetch_all(MYSQLI_ASSOC); // Récupération de l'enregistrement
-                echo json_encode($forfaitsOBJ, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES); // Transmission de l’objet au format JSON
+				$requete = $mysqli->query("SELECT * FROM forfaits");
+                $listeForfaitsObj = [];
+                while ($forfaitsSQL = $requete->fetch_assoc()){
+                    $forfaitsOBJ = ConversionForfaitSQLEnObjet($forfaitsSQL);
+                    array_push($listeForfaitsObj, $forfaitsOBJ);
+                }
+                echo json_encode($listeForfaitsObj, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES); // Transmission de l’objet au format JSON
+                $requete->close();
 			} 
 			break;
-		case 'POST': // GESTION DES DEMANDES DE TYPE POST 
+		 case 'POST': // GESTION DES DEMANDES DE TYPE POST 
+            $reponse = new stdClass(); 
+            $reponse->message = "Ajout d'un forfait: "; 
+
 			$corpsJSON = file_get_contents('php://input'); 
             $data = json_decode($corpsJSON, TRUE);
 
-            $reponse = new stdClass(); 
-            $reponse->message = "Ajout du produit: "; 
+            $destination = $data['destination'];
+            $villeDepart = $data['villeDepart'];
+            $dateDepart = $data['dateDepart'];
+            $dateRetour = $data['dateRetour'];
+            $prix = $data['prix'];
+            $rabais = $data['rabais'];
+            $affichageRabais = $data['affichageRabais'];
+            $nouveauPrix = $data['nouveauPrix'];
+            $vedette = $data['vedette'];
+            $nom = $data['hotel']['nom'];
+            $coordonnees = $data['hotel']['coordonnees'];
+            $nombreEtoiles = $data['hotel']['nombreEtoiles'];
+            $nombreChambres = $data['hotel']['nombreChambres'];
+            $description = $data['hotel']['description'];
+            $caracteristiques = $data['hotel']['caracteristiques'];
+            $avis = $data['hotel']['avis'];
 
-            if(isset($data['nom']) && isset($data['description']) && isset($data['prix']) && isset($data['quantite']) && isset($data['categorie'])) {
-                if ($requete = $mysqli->prepare("INSERT INTO produits (nom, description, prix, quantite, categorie) VALUES( ?, ?, ?, ?, ?)")) { 
-                    $requete->bind_param("ssdis", $data['nom'], $data['description'], $data['prix'], $data['quantite'], $data['categorie']); 
+            if(isset($destination) && isset($villeDepart) && isset($dateDepart) && isset($dateRetour) && isset($prix) && isset($rabais) && isset($affichageRabais)
+                && isset($nouveauPrix) && isset($vedette) && isset($nom) && isset($coordonnees) && isset($nombreEtoiles) && isset($nombreChambres) 
+                && isset($description) && isset($caracteristiques) && isset($avis)) {                
+                $caracteristiques_str = implode(';', $caracteristiques);
+                if($requete = $mysqli->prepare("INSERT INTO forfaits (destination, villeDepart, dateDepart, dateRetour, prix, rabais, affichageRabais, nouveauPrix, vedette, nom, coordonnees, nombreEtoiles, nombreChambres, description, caracteristiques, avis) VALUES( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) { 
+                    $requete->bind_param("ssssddidissdissi", $destination, $villeDepart, $dateDepart, $dateRetour, $prix, $rabais, $affichageRabais, $nouveauPrix, $vedette, $nom, $coordonnees, $nombreEtoiles, $nombreChambres, $description, $caracteristiques_str, $avis); 
                     if($requete->execute()) { 
                         $reponse->message .= "Succès"; 
                     } else { 
@@ -50,7 +77,7 @@ header('Access-Control-Allow-Origin: *');
 
             echo json_encode($reponse, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 
-			break; 
+			break;
         case 'PUT': // GESTION DES DEMANDES DE TYPE PUT 
             $reponse = new stdClass(); 
             $reponse->message = "Édition du produit:"; 
@@ -58,10 +85,30 @@ header('Access-Control-Allow-Origin: *');
             $corpsJSON = file_get_contents('php://input'); 
             $data = json_decode($corpsJSON, TRUE); 
 
+            $destination = $data['destination'];
+            $villeDepart = $data['villeDepart'];
+            $dateDepart = $data['dateDepart'];
+            $dateRetour = $data['dateRetour'];
+            $prix = $data['prix'];
+            $rabais = $data['rabais'];
+            $affichageRabais = $data['affichageRabais'];
+            $nouveauPrix = $data['nouveauPrix'];
+            $vedette = $data['vedette'];
+            $nom = $data['hotel']['nom'];
+            $coordonnees = $data['hotel']['coordonnees'];
+            $nombreEtoiles = $data['hotel']['nombreEtoiles'];
+            $nombreChambres = $data['hotel']['nombreChambres'];
+            $description = $data['hotel']['description'];
+            $caracteristiques = $data['hotel']['caracteristiques'];
+            $avis = $data['hotel']['avis'];
+
             if(isset($_GET['id'])) { 
-                if(isset($data['nom']) && isset($data['description']) && isset($data['prix']) && isset($data['quantite']) && isset($data['categorie'])) {
-                    if ($requete = $mysqli->prepare("UPDATE produits SET nom=?, description=?, prix=?, quantite=?, categorie=? WHERE id=?")) {
-                        $requete->bind_param("ssdisi", $data['nom'], $data['description'], $data['prix'], $data['quantite'], $data['categorie'], $_GET['id']); 
+                if(isset($destination) && isset($villeDepart) && isset($dateDepart) && isset($dateRetour) && isset($prix) && isset($rabais) && isset($affichageRabais)
+                && isset($nouveauPrix) && isset($vedette) && isset($nom) && isset($coordonnees) && isset($nombreEtoiles) && isset($nombreChambres) 
+                && isset($description) && isset($caracteristiques) && isset($avis)){
+                    $caracteristiques_str = implode(';', $caracteristiques);
+                    if ($requete = $mysqli->prepare("UPDATE forfaits SET destination=?, villeDepart=?, dateDepart=?, dateRetour=?, prix=?, rabais=?, affichageRabais=?, nouveauPrix=?, vedette=?, nom=?, coordonnees=?, nombreEtoiles=?, nombreChambres=?, description=?, caracteristiques=?, avis=? WHERE id=?")) {
+                        $requete->bind_param("ssssddidissdissii", $destination, $villeDepart, $dateDepart, $dateRetour, $prix, $rabais, $affichageRabais, $nouveauPrix, $vedette, $nom, $coordonnees, $nombreEtoiles, $nombreChambres, $description, $caracteristiques_str, $avis, $_GET['id']); 
                         if($requete->execute()) { 
                             $reponse->message .= "Succès"; 
                         } else { 
@@ -84,7 +131,7 @@ header('Access-Control-Allow-Origin: *');
             $reponse->message = "Suppression du client: "; 
 
             if(isset($_GET['id'])) { 
-                if ($requete = $mysqli->prepare("DELETE FROM produits WHERE id=?")) { 
+                if ($requete = $mysqli->prepare("DELETE FROM forfaits WHERE id=?")) { 
                     $requete->bind_param("i", $_GET['id']); 
                     if($requete->execute()) { 
                         $reponse->message .= "Succès"; 
