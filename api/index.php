@@ -39,6 +39,7 @@ header('Access-Control-Allow-Origin: *');
 			$corpsJSON = file_get_contents('php://input'); 
             $data = json_decode($corpsJSON, TRUE);
 
+            $region = $data['region'];
             $destination = $data['destination'];
             $villeDepart = $data['villeDepart'];
             $dateDepart = $data['dateDepart'];
@@ -56,7 +57,7 @@ header('Access-Control-Allow-Origin: *');
             $caracteristiques = $data['hotel']['caracteristiques'];
             $avis = $data['hotel']['avis'];
 
-            if(isset($destination) && isset($villeDepart) && isset($dateDepart) && isset($dateRetour) && isset($prix) && isset($rabais) && isset($affichageRabais)
+            if(isset($region) && isset($destination) && isset($villeDepart) && isset($dateDepart) && isset($dateRetour) && isset($prix) && isset($rabais) && isset($affichageRabais)
                 && isset($nouveauPrix) && isset($vedette) && isset($nom) && isset($coordonnees) && isset($nombreEtoiles) && isset($nombreChambres) 
                 && isset($description) && isset($caracteristiques) && isset($avis)) {                
                 $caracteristiques_str = implode(';', $caracteristiques);
@@ -85,6 +86,7 @@ header('Access-Control-Allow-Origin: *');
             $corpsJSON = file_get_contents('php://input'); 
             $data = json_decode($corpsJSON, TRUE); 
 
+            $region = $data['region'];
             $destination = $data['destination'];
             $villeDepart = $data['villeDepart'];
             $dateDepart = $data['dateDepart'];
@@ -103,7 +105,7 @@ header('Access-Control-Allow-Origin: *');
             $avis = $data['hotel']['avis'];
 
             if(isset($_GET['id'])) { 
-                if(isset($destination) && isset($villeDepart) && isset($dateDepart) && isset($dateRetour) && isset($prix) && isset($rabais) && isset($affichageRabais)
+                if(isset($region) && isset($destination) && isset($villeDepart) && isset($dateDepart) && isset($dateRetour) && isset($prix) && isset($rabais) && isset($affichageRabais)
                 && isset($nouveauPrix) && isset($vedette) && isset($nom) && isset($coordonnees) && isset($nombreEtoiles) && isset($nombreChambres) 
                 && isset($description) && isset($caracteristiques) && isset($avis)){
                     $caracteristiques_str = implode(';', $caracteristiques);

@@ -3,6 +3,7 @@
 function ConversionForfaitSQLEnObjet($forfaitsSQL) {
 
     $forfaitsOBJ = new stdClass();
+    $forfaitsOBJ->region = $forfaitsSQL["region"];
     $forfaitsOBJ->destination = $forfaitsSQL["destination"];
     $forfaitsOBJ->villeDepart = $forfaitsSQL["villeDepart"];
     $forfaitsOBJ->dateDepart = $forfaitsSQL["dateDepart"];
